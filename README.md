@@ -58,7 +58,6 @@ Each recorded bet includes:
 - **Status**: won, lost, or cancelled
 - **Created**: Original creation date
 - **Recorded At**: When the data was recorded by the extension
-- **Page URL**: Source page URL
 
 ## Technical Details
 

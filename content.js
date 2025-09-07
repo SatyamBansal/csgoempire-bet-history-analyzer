@@ -110,16 +110,15 @@
 
       // Only add if slipId exists (as identifier)
       if (slipId) {
-        detailedRows.push({
-          game,
-          slipId,
-          bet: Number(bet.toFixed(2)),
-          profit: Number(profit.toFixed(2)),
-          status,
-          created,
-          pageUrl: window.location.href,
-          recordedAt: new Date().toISOString()
-        });
+      detailedRows.push({
+        game,
+        slipId,
+        bet: Number(bet.toFixed(2)),
+        profit: Number(profit.toFixed(2)),
+        status,
+        created,
+        recordedAt: new Date().toISOString()
+      });
       }
     });
 

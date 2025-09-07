@@ -186,7 +186,7 @@
       return;
     }
 
-    const headers = ['Game', 'Slip ID', 'Bet Amount', 'Profit', 'Status', 'Created', 'Recorded At', 'Page URL'];
+    const headers = ['Game', 'Slip ID', 'Bet Amount', 'Profit', 'Status', 'Created', 'Recorded At'];
     const csvContent = [
       headers.join(','),
       ...bettingData.map(record => [
@@ -196,8 +196,7 @@
         record.profit,
         record.status,
         `"${record.created}"`,
-        `"${record.recordedAt}"`,
-        `"${record.pageUrl}"`
+        `"${record.recordedAt}"`
       ].join(','))
     ].join('\n');
 
