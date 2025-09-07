@@ -184,8 +184,16 @@
       // Calculate totals
       const totals = calculateTotals(updatedData);
 
+      // Debug logging
+      console.log('Bet Calculator - Calculated totals:', totals);
+      console.log('Bet Calculator - TOTAL object:', totals.TOTAL);
+
+      // Safety check for totals
+      const totalCount = totals.TOTAL ? totals.TOTAL.count : 0;
+      const totalProfit = totals.TOTAL ? totals.TOTAL.profitTotal : 0;
+
       showNotification(
-        `Recorded: ${newRecords} new, ${updatedRecords} updated. Total: ${totals.count} bets, Profit: $${totals.profitTotal}`,
+        `Recorded: ${newRecords} new, ${updatedRecords} updated. Total: ${totalCount} bets, Profit: $${totalProfit}`,
         'success'
       );
 
