@@ -256,7 +256,7 @@
     notification.textContent = message;
     notification.style.cssText = `
       position: fixed;
-      top: 80px;
+      bottom: 20px;
       right: 20px;
       z-index: 10001;
       background: ${type === 'success' ? '#4CAF50' : type === 'warning' ? '#ff9800' : type === 'error' ? '#f44336' : '#2196F3'};
