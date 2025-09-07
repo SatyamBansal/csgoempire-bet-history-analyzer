@@ -19,61 +19,6 @@
     return isCorrectUrl && hasTableRows;
   };
 
-  // Check if record button should be enabled
-  let recordButtonEnabled = true; // Default to enabled
-
-  const checkToggleState = async () => {
-    try {
-      const result = await chrome.storage.local.get(['recordButtonEnabled']);
-      recordButtonEnabled = result.recordButtonEnabled !== false; // Default to true
-      console.log('Bet Calculator - Record button enabled:', recordButtonEnabled);
-    } catch (error) {
-      console.error('Error checking toggle state:', error);
-      recordButtonEnabled = true; // Default to enabled on error
-    }
-  };
-
-  // Create and inject the record button
-  const createRecordButton = () => {
-    // Remove existing button if any
-    const existingBtn = document.getElementById('bet-calculator-btn');
-    if (existingBtn) {
-      existingBtn.remove();
-    }
-
-    const button = document.createElement('button');
-    button.id = 'bet-calculator-btn';
-    button.innerHTML = '📊 Record Bets';
-    button.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 10000;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
-    `;
-
-    button.addEventListener('mouseenter', () => {
-      button.style.background = '#45a049';
-      button.style.transform = 'translateY(-2px)';
-    });
-
-    button.addEventListener('mouseleave', () => {
-      button.style.background = '#4CAF50';
-      button.style.transform = 'translateY(0)';
-    });
-
-    button.addEventListener('click', recordCurrentPageData);
-    document.body.appendChild(button);
-  };
 
   // Parse data from current page (adapted from your original script)
   const parseCurrentPageData = () => {
@@ -283,23 +228,7 @@
   // Initialize when page loads
   const init = async () => {
     console.log('Bet Calculator - Initializing...');
-    await checkToggleState();
-    
-    if (!recordButtonEnabled) {
-      console.log('Bet Calculator - Record button disabled by toggle');
-      return;
-    }
-    
-    if (isBettingSite()) {
-      console.log('Bet Calculator - Creating record button');
-      createRecordButton();
-    } else if (window.location.href.includes('csgoempire.com/profile/match-betting/history')) {
-      // Fallback: create button even if table structure isn't found yet
-      console.log('Bet Calculator - Creating record button (fallback mode)');
-      createRecordButton();
-    } else {
-      console.log('Bet Calculator - Not a betting site or table not found');
-    }
+    console.log('Bet Calculator - Content script loaded, ready for popup commands');
   };
 
   // Run on page load
