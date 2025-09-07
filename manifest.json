@@ -5,7 +5,8 @@
   "description": "Record and aggregate betting data across multiple pages",
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "tabs"
   ],
   "host_permissions": [
     "https://csgoempire.com/*"
@@ -23,5 +24,11 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["fullpage.html", "fullpage.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

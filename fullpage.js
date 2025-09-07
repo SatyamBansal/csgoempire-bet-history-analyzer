@@ -1,4 +1,4 @@
-// Popup script for Bet Calculator Extension
+// Full page script for Bet Calculator Extension
 (() => {
   'use strict';
 
@@ -9,6 +9,8 @@
   const mainContentEl = document.getElementById('main-content');
   const totalBetsEl = document.getElementById('total-bets');
   const totalProfitEl = document.getElementById('total-profit');
+  const winRateEl = document.getElementById('win-rate');
+  const avgBetEl = document.getElementById('avg-bet');
   const summaryTbodyEl = document.getElementById('summary-tbody');
   const monthlyTbodyEl = document.getElementById('monthly-tbody');
   const recentBetsListEl = document.getElementById('recent-bets-list');
@@ -16,10 +18,11 @@
   const exportMonthlyBtn = document.getElementById('export-monthly-btn');
   const refreshBtn = document.getElementById('refresh-btn');
   const clearBtn = document.getElementById('clear-btn');
-  const fullpageBtn = document.getElementById('fullpage-btn');
+  const openPopupBtn = document.getElementById('open-popup-btn');
   const recordToggle = document.getElementById('record-toggle');
+  const backBtn = document.getElementById('back-btn');
 
-  // Initialize popup
+  // Initialize full page
   const init = async () => {
     try {
       await loadData();
@@ -27,7 +30,7 @@
       renderUI();
       setupEventListeners();
     } catch (error) {
-      console.error('Error initializing popup:', error);
+      console.error('Error initializing full page:', error);
       showError('Failed to load data');
     }
   };
@@ -103,6 +106,19 @@
     };
 
     return results;
+  };
+
+  // Calculate additional stats
+  const calculateAdditionalStats = (totals) => {
+    const totalBets = totals.TOTAL.count;
+    const wonBets = totals.won ? totals.won.count : 0;
+    const winRate = totalBets > 0 ? (wonBets / totalBets * 100) : 0;
+    const avgBet = totalBets > 0 ? (totals.TOTAL.betTotal / totalBets) : 0;
+
+    return {
+      winRate: Number(winRate.toFixed(1)),
+      avgBet: Number(avgBet.toFixed(2))
+    };
   };
 
   // Parse date from various formats
@@ -249,11 +265,15 @@
     }
 
     const totals = calculateTotals();
+    const additionalStats = calculateAdditionalStats(totals);
     
     // Update main stats
     totalBetsEl.textContent = totals.TOTAL.count;
     totalProfitEl.textContent = `$${totals.TOTAL.profitTotal.toFixed(2)}`;
     totalProfitEl.className = `stat-value ${getProfitClass(totals.TOTAL.profitTotal)}`;
+    
+    winRateEl.textContent = `${additionalStats.winRate}%`;
+    avgBetEl.textContent = `$${additionalStats.avgBet.toFixed(2)}`;
 
     // Render summary table
     renderSummaryTable(totals);
@@ -359,10 +379,10 @@
       return;
     }
 
-    // Sort by recorded date (most recent first) and take last 10
+    // Sort by recorded date (most recent first) and take last 20 for full page
     const recentBets = [...bettingData]
       .sort((a, b) => new Date(b.recordedAt) - new Date(a.recordedAt))
-      .slice(0, 10);
+      .slice(0, 20);
 
     recentBets.forEach(bet => {
       const betItem = document.createElement('div');
@@ -376,7 +396,7 @@
           <div class="bet-profit ${getProfitClass(bet.profit)}">
             $${bet.profit.toFixed(2)}
           </div>
-          <div style="font-size: 11px; color: #999;">
+          <div style="font-size: 12px; color: #999;">
             Bet: $${bet.bet.toFixed(2)}
           </div>
         </div>
@@ -398,9 +418,13 @@
     exportMonthlyBtn.addEventListener('click', exportMonthlyToCSV);
     refreshBtn.addEventListener('click', refreshData);
     clearBtn.addEventListener('click', clearAllData);
-    fullpageBtn.addEventListener('click', openFullPage);
+    openPopupBtn.addEventListener('click', openPopup);
     recordToggle.addEventListener('change', (e) => {
       saveToggleState(e.target.checked);
+    });
+    backBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.close();
     });
   };
 
@@ -498,16 +522,16 @@
     }
   };
 
-  // Open full page view
-  const openFullPage = () => {
-    chrome.tabs.create({ url: chrome.runtime.getURL('fullpage.html') });
+  // Open popup view
+  const openPopup = () => {
+    chrome.action.openPopup();
   };
 
   // Show error message
   const showError = (message) => {
     loadingEl.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">⚠️</div>
+      <div class="error">
+        <div class="error-icon">⚠️</div>
         <h3>Error</h3>
         <p>${message}</p>
       </div>
