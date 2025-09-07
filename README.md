@@ -207,4 +207,8 @@ This project is open source and available under the MIT License.
 
 ## Support
 
-For issues, questions, or feature requests, please create an issue in the repository or contact the developer.
+For issues, questions, or feature requests, please:
+
+- **Create an issue** in the [GitHub repository](https://github.com/SatyamBansal/csgoempire-bet-history-analyzer)
+- **Contact the developer**: imsatyambansal@gmail.com
+- **GitHub**: [@SatyamBansal](https://github.com/SatyamBansal)
