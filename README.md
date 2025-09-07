@@ -5,7 +5,7 @@ A Chrome/Edge browser extension specifically designed for CSGOEmpire that helps 
 ## Features
 
 - **🎯 CSGOEmpire Specific**: Designed specifically for CSGOEmpire's betting history page structure
-- **📊 Record Button**: Automatically appears on CSGOEmpire with a floating "Record Bets" button
+- **📊 Popup Interface**: Clean popup interface with "Record" button to capture betting data
 - **🔄 Pagination Support**: Record data from multiple pages of your betting history
 - **🔍 Deduplication**: Automatically handles duplicate records using slip ID as the unique identifier
 - **📈 Real-time Analytics**: View totals, profit/loss, and detailed breakdowns by status
@@ -13,6 +13,8 @@ A Chrome/Edge browser extension specifically designed for CSGOEmpire that helps 
 - **📤 Export Functionality**: Export all data to CSV for external analysis
 - **🎯 Status Filtering**: Only records won, lost, and cancelled bets (ignores open bets)
 - **⏰ Timestamp Tracking**: Shows when each bet actually happened, not when it was recorded
+- **📱 Full Page View**: Detailed analytics dashboard with monthly breakdowns
+- **🧪 Test Page**: Included test page for development and demonstration
 
 ## Installation
 
@@ -36,10 +38,10 @@ A Chrome/Edge browser extension specifically designed for CSGOEmpire that helps 
 
 1. **Navigate to CSGOEmpire** and log into your account
 2. **Go to your betting history** (usually found in your profile or account section)
-3. **Look for the floating "Record Bets" button** in the top-right corner of the page
-4. **Click "Record Bets"** to parse and record all betting data from the current page
+3. **Click the extension icon** in your browser toolbar to open the popup
+4. **Click the "Record" button** in the popup to parse and record all betting data from the current page
 5. **Navigate to other pages** of your betting history (use pagination) and repeat the process
-6. **View your data** by clicking the extension icon in the browser toolbar
+6. **View your data** in the popup or click "Details" for the full analytics dashboard
 
 ### CSGOEmpire Specific Instructions
 
@@ -47,16 +49,25 @@ A Chrome/Edge browser extension specifically designed for CSGOEmpire that helps 
 - It automatically detects CSGOEmpire's HTML elements and parses bet information
 - Supports CSGOEmpire's date format parsing (e.g., "Sat 06 Sep 21:03")
 - Works with CSGOEmpire's slip ID system for deduplication
+- **No floating buttons** - all recording is done through the extension popup
 
 ### Viewing Analytics
 
+#### Popup View (Quick Overview)
 Click the extension icon to open the popup where you can:
-
 - **View Summary Statistics**: Total bets, total profit/loss
-- **See Detailed Breakdown**: Count and totals by status (won, lost, cancelled)
-- **Browse Recent Bets**: Last 10 recorded bets with details
-- **Export Data**: Download all data as CSV file
-- **Clear Data**: Remove all recorded data (with confirmation)
+- **Browse Recent Bets**: Last 5 recorded bets with timestamps
+- **Record New Data**: Click "Record" to capture current page data
+- **Open Full Dashboard**: Click "Details" for comprehensive analytics
+
+#### Full Page Dashboard (Detailed Analytics)
+Click "Details" in the popup to open the full analytics dashboard:
+- **Comprehensive Statistics**: Total bets, profit/loss, win rate, average bet
+- **Status Breakdown**: Detailed breakdown by won, lost, cancelled bets
+- **Monthly Analysis**: Month-by-month betting performance
+- **Recent Activity**: All recorded bets with full details
+- **Export Options**: Export all data or monthly data as CSV
+- **Data Management**: Clear all data or refresh statistics
 
 ### Data Structure
 
@@ -74,12 +85,16 @@ Each recorded bet includes:
 ### File Structure
 
 ```
-betCalculator/
+csgoempire-bet-history-analyzer/
 ├── manifest.json          # Extension manifest
 ├── content.js            # Content script (injected into pages)
 ├── popup.html            # Extension popup UI
 ├── popup.js              # Popup functionality
 ├── background.js         # Background service worker
+├── fullpage.html         # Full analytics dashboard
+├── fullpage.js           # Full page functionality
+├── test-page.html        # Test page for development
+├── LICENSE               # MIT License
 └── README.md             # This file
 ```
 
@@ -106,6 +121,20 @@ The extension is specifically designed for CSGOEmpire and works with their betti
 - Slip ID extraction from CSGOEmpire's table structure
 
 **Note**: This extension is not compatible with other betting sites and is specifically tailored for CSGOEmpire's HTML structure and data format.
+
+## Testing
+
+### Test Page
+
+The extension includes a `test-page.html` file for testing and development:
+
+1. **Open `test-page.html`** in your browser
+2. **Install the extension** if not already installed
+3. **Click the extension icon** and then click "Record"
+4. **Verify data is recorded** by checking the popup or full dashboard
+5. **Expected results**: 4 records should be recorded (open bets are ignored)
+
+The test page simulates CSGOEmpire's HTML structure with sample betting data, allowing you to test the extension without accessing the actual CSGOEmpire site.
 
 ## Customization
 
@@ -143,13 +172,15 @@ if (!['won', 'lost', 'cancelled'].includes(status)) {
 3. **Check extension is enabled**: Check the extensions page to ensure it's enabled
 4. **Check console for errors**: Open browser dev tools and look for error messages
 5. **Try refreshing the page**: Sometimes the content script needs a page refresh to load properly
+6. **Test with the test page**: Open `test-page.html` to verify the extension is working correctly
 
 ### Data Not Recording
 
-1. **Check if "Record Bets" button appears**: If not, you might not be on CSGOEmpire's betting history page
-2. **Verify you're on the correct page**: Make sure you're on CSGOEmpire's betting history page, not other sections
+1. **Check if you're on the correct page**: Make sure you're on CSGOEmpire's betting history page, not other sections
+2. **Verify the "Record" button works**: Click the extension icon and try the "Record" button in the popup
 3. **Check for JavaScript errors**: Look in the console for any parsing errors
 4. **Ensure you have betting history**: The extension only works if you have betting history to display
+5. **Test with the test page**: Open `test-page.html` to verify recording functionality
 
 ### Data Export Issues
 
