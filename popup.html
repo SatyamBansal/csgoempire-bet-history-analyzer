@@ -309,6 +309,83 @@
       color: #666;
       margin-left: 62px;
     }
+
+    .monthly-breakdown {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .monthly-breakdown h3 {
+      margin: 0;
+      padding: 15px;
+      background: #f8f9fa;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      border-bottom: 1px solid #eee;
+    }
+
+    .monthly-table {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .monthly-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .monthly-table th {
+      background: #f8f9fa;
+      padding: 10px 8px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .monthly-table td {
+      padding: 10px 8px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+    }
+
+    .monthly-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .month-name {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .month-profit-positive {
+      color: #4CAF50;
+      font-weight: 600;
+    }
+
+    .month-profit-negative {
+      color: #f44336;
+      font-weight: 600;
+    }
+
+    .month-profit-neutral {
+      color: #666;
+      font-weight: 600;
+    }
+
+    .status-count {
+      font-size: 11px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
@@ -348,6 +425,27 @@
         </table>
       </div>
 
+      <div class="monthly-breakdown">
+        <h3>Monthly Breakdown</h3>
+        <div class="monthly-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Bets</th>
+                <th>Bet Total</th>
+                <th>Profit/Loss</th>
+                <th>Won</th>
+                <th>Lost</th>
+                <th>Cancelled</th>
+              </tr>
+            </thead>
+            <tbody id="monthly-tbody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="toggle-section">
         <div class="toggle-container">
           <label class="toggle-label">
@@ -361,6 +459,7 @@
 
       <div class="actions">
         <button class="btn btn-primary" id="export-btn">Export CSV</button>
+        <button class="btn btn-primary" id="export-monthly-btn">Export Monthly</button>
         <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
         <button class="btn btn-danger" id="clear-btn">Clear All</button>
       </div>

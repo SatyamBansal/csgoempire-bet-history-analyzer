@@ -10,8 +10,10 @@
   const totalBetsEl = document.getElementById('total-bets');
   const totalProfitEl = document.getElementById('total-profit');
   const summaryTbodyEl = document.getElementById('summary-tbody');
+  const monthlyTbodyEl = document.getElementById('monthly-tbody');
   const recentBetsListEl = document.getElementById('recent-bets-list');
   const exportBtn = document.getElementById('export-btn');
+  const exportMonthlyBtn = document.getElementById('export-monthly-btn');
   const refreshBtn = document.getElementById('refresh-btn');
   const clearBtn = document.getElementById('clear-btn');
   const recordToggle = document.getElementById('record-toggle');
@@ -102,6 +104,142 @@
     return results;
   };
 
+  // Parse date from various formats
+  const parseDate = (dateString) => {
+    if (!dateString) return new Date();
+    
+    console.log('Bet Calculator - Parsing date:', dateString);
+    
+    // Handle CSGOEmpire format: "Sat 06 Sep 21:03"
+    const empireFormat = /^(\w{3})\s+(\d{1,2})\s+(\w{3})\s+(\d{1,2}):(\d{2})$/;
+    const empireMatch = dateString.match(empireFormat);
+    
+    if (empireMatch) {
+      const [, dayName, day, monthName, hour, minute] = empireMatch;
+      
+      // Map month abbreviations to numbers
+      const monthMap = {
+        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+      };
+      
+      const month = monthMap[monthName];
+      if (month !== undefined) {
+        // Assume current year for dates without year
+        const currentYear = new Date().getFullYear();
+        const parsedDate = new Date(currentYear, month, parseInt(day), parseInt(hour), parseInt(minute));
+        
+        // If the parsed date is in the future, assume it's from last year
+        if (parsedDate > new Date()) {
+          parsedDate.setFullYear(currentYear - 1);
+        }
+        
+        console.log('Bet Calculator - Successfully parsed Empire date:', dateString, '->', parsedDate);
+        return parsedDate;
+      }
+    }
+    
+    // Try other date formats as fallback
+    const formats = [
+      // Direct parsing
+      dateString,
+      // ISO format with time
+      dateString.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1-$2-$3'),
+      // Handle relative dates like "2 days ago", "1 week ago"
+      dateString.replace(/ago|day|week|month|year/gi, ''),
+      // Try parsing as DD/MM/YYYY or MM/DD/YYYY
+      dateString.replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/, '$3-$2-$1'),
+      // Try parsing as DD-MM-YYYY or MM-DD-YYYY
+      dateString.replace(/(\d{1,2})-(\d{1,2})-(\d{4})/, '$3-$2-$1'),
+    ];
+    
+    for (const format of formats) {
+      const date = new Date(format);
+      if (!isNaN(date.getTime()) && date.getFullYear() > 2000) {
+        console.log('Bet Calculator - Successfully parsed date:', format, '->', date);
+        return date;
+      }
+    }
+    
+    console.log('Bet Calculator - Failed to parse date, using current date');
+    // If all parsing fails, return current date
+    return new Date();
+  };
+
+  // Calculate monthly breakdown
+  const calculateMonthlyBreakdown = () => {
+    const monthlyData = {};
+
+    bettingData.forEach(record => {
+      // Parse the original created date, fallback to recordedAt if created is invalid
+      let recordDate;
+      
+      // Use created field now that we have proper parsing for Empire format
+      const useRecordedAt = false;
+      
+      if (!useRecordedAt && record.created && record.created.trim() !== '') {
+        // Try to parse the created date with multiple formats
+        recordDate = parseDate(record.created);
+        // If parsing failed, date is invalid, or year is too old, use recordedAt
+        if (isNaN(recordDate.getTime()) || recordDate.getFullYear() < 2020) {
+          console.log('Bet Calculator - Using recordedAt fallback for record:', record.slipId);
+          recordDate = new Date(record.recordedAt);
+        }
+      } else {
+        recordDate = new Date(record.recordedAt);
+      }
+      
+      const monthKey = `${recordDate.getFullYear()}-${String(recordDate.getMonth() + 1).padStart(2, '0')}`;
+      const monthName = recordDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = {
+          monthName: monthName,
+          betTotal: 0,
+          profitTotal: 0,
+          count: 0,
+          won: { betTotal: 0, profitTotal: 0, count: 0 },
+          lost: { betTotal: 0, profitTotal: 0, count: 0 },
+          cancelled: { betTotal: 0, profitTotal: 0, count: 0 }
+        };
+      }
+
+      // Add to overall month totals
+      monthlyData[monthKey].betTotal += record.bet;
+      monthlyData[monthKey].profitTotal += record.profit;
+      monthlyData[monthKey].count += 1;
+
+      // Add to status-specific totals
+      const status = record.status;
+      if (monthlyData[monthKey][status]) {
+        monthlyData[monthKey][status].betTotal += record.bet;
+        monthlyData[monthKey][status].profitTotal += record.profit;
+        monthlyData[monthKey][status].count += 1;
+      }
+    });
+
+    // Round all values
+    Object.keys(monthlyData).forEach(monthKey => {
+      const month = monthlyData[monthKey];
+      month.betTotal = Number(month.betTotal.toFixed(2));
+      month.profitTotal = Number(month.profitTotal.toFixed(2));
+      
+      ['won', 'lost', 'cancelled'].forEach(status => {
+        if (month[status]) {
+          month[status].betTotal = Number(month[status].betTotal.toFixed(2));
+          month[status].profitTotal = Number(month[status].profitTotal.toFixed(2));
+        }
+      });
+    });
+
+    // Sort by month (newest first)
+    const sortedMonths = Object.keys(monthlyData).sort().reverse();
+    return sortedMonths.map(monthKey => ({
+      monthKey,
+      ...monthlyData[monthKey]
+    }));
+  };
+
   // Render the UI
   const renderUI = () => {
     if (bettingData.length === 0) {
@@ -118,6 +256,9 @@
 
     // Render summary table
     renderSummaryTable(totals);
+
+    // Render monthly breakdown
+    renderMonthlyBreakdown();
 
     // Render recent bets
     renderRecentBets();
@@ -159,6 +300,52 @@
         `;
         summaryTbodyEl.appendChild(row);
       }
+    });
+  };
+
+  // Render monthly breakdown
+  const renderMonthlyBreakdown = () => {
+    monthlyTbodyEl.innerHTML = '';
+
+    if (bettingData.length === 0) {
+      monthlyTbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666; padding: 20px;">No data available</td></tr>';
+      return;
+    }
+
+    const monthlyData = calculateMonthlyBreakdown();
+    
+    // Debug logging
+    console.log('Bet Calculator - Monthly data:', monthlyData);
+    console.log('Bet Calculator - Sample records:', bettingData.slice(0, 3).map(r => ({ 
+      created: r.created, 
+      recordedAt: r.recordedAt 
+    })));
+
+    if (monthlyData.length === 0) {
+      monthlyTbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666; padding: 20px;">No monthly data available</td></tr>';
+      return;
+    }
+
+    monthlyData.forEach(month => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="month-name">${month.monthName}</td>
+        <td>${month.count}</td>
+        <td>$${month.betTotal.toFixed(2)}</td>
+        <td class="${getProfitClass(month.profitTotal)}">
+          $${month.profitTotal.toFixed(2)}
+        </td>
+        <td class="status-count">
+          ${month.won.count} ($${month.won.profitTotal.toFixed(2)})
+        </td>
+        <td class="status-count">
+          ${month.lost.count} ($${month.lost.profitTotal.toFixed(2)})
+        </td>
+        <td class="status-count">
+          ${month.cancelled.count} ($${month.cancelled.profitTotal.toFixed(2)})
+        </td>
+      `;
+      monthlyTbodyEl.appendChild(row);
     });
   };
 
@@ -207,6 +394,7 @@
   // Setup event listeners
   const setupEventListeners = () => {
     exportBtn.addEventListener('click', exportToCSV);
+    exportMonthlyBtn.addEventListener('click', exportMonthlyToCSV);
     refreshBtn.addEventListener('click', refreshData);
     clearBtn.addEventListener('click', clearAllData);
     recordToggle.addEventListener('change', (e) => {
@@ -240,6 +428,43 @@
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
     link.setAttribute('download', `betting-data-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Export monthly data to CSV
+  const exportMonthlyToCSV = () => {
+    const monthlyData = calculateMonthlyBreakdown();
+    
+    if (monthlyData.length === 0) {
+      alert('No monthly data to export');
+      return;
+    }
+
+    const headers = ['Month', 'Total Bets', 'Bet Total', 'Profit/Loss', 'Won Count', 'Won Profit', 'Lost Count', 'Lost Profit', 'Cancelled Count', 'Cancelled Profit'];
+    const csvContent = [
+      headers.join(','),
+      ...monthlyData.map(month => [
+        `"${month.monthName}"`,
+        month.count,
+        month.betTotal,
+        month.profitTotal,
+        month.won.count,
+        month.won.profitTotal,
+        month.lost.count,
+        month.lost.profitTotal,
+        month.cancelled.count,
+        month.cancelled.profitTotal
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `monthly-betting-data-${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
