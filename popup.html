@@ -3,258 +3,190 @@
 <head>
   <meta charset="utf-8">
   <style>
-    body {
-      width: 400px;
-      min-height: 500px;
+    * {
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f5f5;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #fafbfc;
+      color: #2c3e50;
+      line-height: 1.4;
     }
 
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 20px;
+      padding: 16px 20px;
       text-align: center;
+      position: relative;
     }
 
     .header h1 {
-      margin: 0;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .header .subtitle {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 2px;
     }
 
     .content {
       padding: 20px;
     }
 
-    .stats-grid {
+    .main-stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: 12px;
       margin-bottom: 20px;
     }
 
     .stat-card {
       background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       text-align: center;
+      border: 1px solid #f1f3f4;
     }
 
     .stat-value {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 5px;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
     }
 
     .stat-label {
-      font-size: 12px;
-      color: #666;
+      font-size: 10px;
+      color: #6c757d;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      font-weight: 500;
     }
 
-    .profit-positive {
-      color: #4CAF50;
-    }
+    .profit-positive { color: #28a745; }
+    .profit-negative { color: #dc3545; }
+    .profit-neutral { color: #6c757d; }
 
-    .profit-negative {
-      color: #f44336;
-    }
-
-    .profit-neutral {
-      color: #666;
-    }
-
-    .summary-table {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-
-    .summary-table table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .summary-table th {
-      background: #f8f9fa;
-      padding: 12px;
-      text-align: left;
-      font-size: 12px;
-      font-weight: 600;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .summary-table td {
-      padding: 12px;
-      border-top: 1px solid #eee;
-      font-size: 14px;
-    }
-
-    .summary-table tr:hover {
-      background: #f8f9fa;
-    }
-
-    .actions {
+    .quick-actions {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     .btn {
       flex: 1;
-      padding: 12px;
+      padding: 10px 12px;
       border: none;
-      border-radius: 6px;
-      font-size: 14px;
+      border-radius: 8px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .btn-primary {
-      background: #4CAF50;
+      background: #007bff;
       color: white;
     }
 
     .btn-primary:hover {
-      background: #45a049;
+      background: #0056b3;
+      transform: translateY(-1px);
     }
 
-    .btn-secondary {
-      background: #2196F3;
-      color: white;
+    .btn-outline {
+      background: transparent;
+      color: #6c757d;
+      border: 1px solid #dee2e6;
     }
 
-    .btn-secondary:hover {
-      background: #1976D2;
+    .btn-outline:hover {
+      background: #f8f9fa;
+      border-color: #adb5bd;
     }
 
-    .btn-danger {
-      background: #f44336;
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: #d32f2f;
-    }
-
-    .recent-bets {
+    .recent-activity {
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      max-height: 200px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid #f1f3f4;
+      margin-bottom: 16px;
+    }
+
+    .recent-activity h3 {
+      margin: 0;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #495057;
+      border-bottom: 1px solid #f1f3f4;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .activity-list {
+      max-height: 120px;
       overflow-y: auto;
     }
 
-    .recent-bets h3 {
-      margin: 0;
-      padding: 15px;
-      background: #f8f9fa;
-      font-size: 14px;
-      font-weight: 600;
-      color: #333;
-      border-bottom: 1px solid #eee;
-    }
-
-    .bet-item {
-      padding: 12px 15px;
-      border-bottom: 1px solid #eee;
+    .activity-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f8f9fa;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .bet-item:last-child {
+    .activity-item:last-child {
       border-bottom: none;
     }
 
-    .bet-info {
+    .activity-info {
       flex: 1;
     }
 
-    .bet-game {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 2px;
-    }
-
-    .bet-slip {
+    .activity-game {
       font-size: 11px;
-      color: #999;
+      color: #6c757d;
+      margin-bottom: 2px;
+      font-weight: 500;
     }
 
-    .bet-amount {
+    .activity-slip {
+      font-size: 10px;
+      color: #adb5bd;
+    }
+
+    .activity-amount {
       text-align: right;
     }
 
-    .bet-profit {
+    .activity-profit {
       font-weight: 600;
-      font-size: 14px;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #666;
-    }
-
-    .empty-state-icon {
-      font-size: 48px;
-      margin-bottom: 15px;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #666;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .status-won {
-      background: #e8f5e8;
-      color: #4CAF50;
-    }
-
-    .status-lost {
-      background: #ffebee;
-      color: #f44336;
-    }
-
-    .status-cancelled {
-      background: #fff3e0;
-      color: #ff9800;
+      font-size: 12px;
     }
 
     .toggle-section {
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-      padding: 20px;
-    }
-
-    .toggle-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid #f1f3f4;
+      padding: 16px;
+      margin-bottom: 16px;
     }
 
     .toggle-label {
@@ -271,10 +203,10 @@
 
     .toggle-slider {
       position: relative;
-      width: 50px;
-      height: 24px;
-      background: #ccc;
-      border-radius: 24px;
+      width: 44px;
+      height: 22px;
+      background: #dee2e6;
+      border-radius: 22px;
       transition: background 0.3s ease;
     }
 
@@ -283,114 +215,102 @@
       position: absolute;
       top: 2px;
       left: 2px;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       background: white;
       border-radius: 50%;
       transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .toggle-input:checked + .toggle-slider {
-      background: #4CAF50;
+      background: #28a745;
     }
 
     .toggle-input:checked + .toggle-slider:before {
-      transform: translateX(26px);
+      transform: translateX(22px);
     }
 
     .toggle-text {
-      font-size: 14px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .toggle-description {
       font-size: 12px;
-      color: #666;
-      margin-left: 62px;
+      font-weight: 600;
+      color: #495057;
     }
 
-    .monthly-breakdown {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-      overflow: hidden;
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6c757d;
     }
 
-    .monthly-breakdown h3 {
-      margin: 0;
-      padding: 15px;
-      background: #f8f9fa;
+    .empty-state-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    .empty-state h3 {
       font-size: 14px;
-      font-weight: 600;
-      color: #333;
-      border-bottom: 1px solid #eee;
+      margin-bottom: 8px;
+      color: #495057;
     }
 
-    .monthly-table {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .monthly-table table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .monthly-table th {
-      background: #f8f9fa;
-      padding: 10px 8px;
-      text-align: left;
+    .empty-state p {
       font-size: 11px;
-      font-weight: 600;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      position: sticky;
-      top: 0;
-      z-index: 1;
+      line-height: 1.4;
     }
 
-    .monthly-table td {
-      padding: 10px 8px;
-      border-top: 1px solid #eee;
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6c757d;
       font-size: 12px;
     }
 
-    .monthly-table tr:hover {
-      background: #f8f9fa;
+    .error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #dc3545;
     }
 
-    .month-name {
-      font-weight: 600;
-      color: #333;
+    .error-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
     }
 
-    .month-profit-positive {
-      color: #4CAF50;
-      font-weight: 600;
+    .error h3 {
+      font-size: 14px;
+      margin-bottom: 8px;
     }
 
-    .month-profit-negative {
-      color: #f44336;
-      font-weight: 600;
-    }
-
-    .month-profit-neutral {
-      color: #666;
-      font-weight: 600;
-    }
-
-    .status-count {
+    .error p {
       font-size: 11px;
-      color: #666;
+      line-height: 1.4;
+    }
+
+    /* Scrollbar styling */
+    .activity-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .activity-list::-webkit-scrollbar-track {
+      background: #f1f3f4;
+    }
+
+    .activity-list::-webkit-scrollbar-thumb {
+      background: #dee2e6;
+      border-radius: 2px;
+    }
+
+    .activity-list::-webkit-scrollbar-thumb:hover {
+      background: #adb5bd;
     }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>📊 Bet Calculator</h1>
+    <div class="subtitle">Betting Analytics</div>
   </div>
 
   <div class="content">
@@ -399,7 +319,7 @@
     </div>
 
     <div id="main-content" style="display: none;">
-      <div class="stats-grid">
+      <div class="main-stats">
         <div class="stat-card">
           <div class="stat-value" id="total-bets">0</div>
           <div class="stat-label">Total Bets</div>
@@ -410,65 +330,23 @@
         </div>
       </div>
 
-      <div class="summary-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>Count</th>
-              <th>Bet Total</th>
-              <th>Profit</th>
-            </tr>
-          </thead>
-          <tbody id="summary-tbody">
-          </tbody>
-        </table>
+      <div class="quick-actions">
+        <button class="btn btn-primary" id="fullpage-btn">View Details</button>
+        <button class="btn btn-outline" id="refresh-btn">Refresh</button>
       </div>
 
-      <div class="monthly-breakdown">
-        <h3>Monthly Breakdown</h3>
-        <div class="monthly-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th>Bets</th>
-                <th>Bet Total</th>
-                <th>Profit/Loss</th>
-                <th>Won</th>
-                <th>Lost</th>
-                <th>Cancelled</th>
-              </tr>
-            </thead>
-            <tbody id="monthly-tbody">
-            </tbody>
-          </table>
+      <div class="recent-activity">
+        <h3>Recent Activity</h3>
+        <div class="activity-list" id="recent-bets-list">
         </div>
       </div>
 
       <div class="toggle-section">
-        <div class="toggle-container">
-          <label class="toggle-label">
-            <input type="checkbox" id="record-toggle" class="toggle-input">
-            <span class="toggle-slider"></span>
-            <span class="toggle-text">Show Record Button</span>
-          </label>
-          <div class="toggle-description">Enable to show record button on CSGOEmpire betting pages</div>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="btn btn-primary" id="export-btn">Export CSV</button>
-        <button class="btn btn-primary" id="export-monthly-btn">Export Monthly</button>
-        <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
-        <button class="btn btn-secondary" id="fullpage-btn">Full Page View</button>
-        <button class="btn btn-danger" id="clear-btn">Clear All</button>
-      </div>
-
-      <div class="recent-bets">
-        <h3>Recent Bets</h3>
-        <div id="recent-bets-list">
-        </div>
+        <label class="toggle-label">
+          <input type="checkbox" id="record-toggle" class="toggle-input">
+          <span class="toggle-slider"></span>
+          <span class="toggle-text">Record Button</span>
+        </label>
       </div>
     </div>
   </div>

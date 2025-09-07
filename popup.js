@@ -9,13 +9,8 @@
   const mainContentEl = document.getElementById('main-content');
   const totalBetsEl = document.getElementById('total-bets');
   const totalProfitEl = document.getElementById('total-profit');
-  const summaryTbodyEl = document.getElementById('summary-tbody');
-  const monthlyTbodyEl = document.getElementById('monthly-tbody');
   const recentBetsListEl = document.getElementById('recent-bets-list');
-  const exportBtn = document.getElementById('export-btn');
-  const exportMonthlyBtn = document.getElementById('export-monthly-btn');
   const refreshBtn = document.getElementById('refresh-btn');
-  const clearBtn = document.getElementById('clear-btn');
   const fullpageBtn = document.getElementById('fullpage-btn');
   const recordToggle = document.getElementById('record-toggle');
 
@@ -255,13 +250,7 @@
     totalProfitEl.textContent = `$${totals.TOTAL.profitTotal.toFixed(2)}`;
     totalProfitEl.className = `stat-value ${getProfitClass(totals.TOTAL.profitTotal)}`;
 
-    // Render summary table
-    renderSummaryTable(totals);
-
-    // Render monthly breakdown
-    renderMonthlyBreakdown();
-
-    // Render recent bets
+    // Render recent bets (simplified)
     renderRecentBets();
 
     // Show main content
@@ -280,75 +269,6 @@
     `;
   };
 
-  // Render summary table
-  const renderSummaryTable = (totals) => {
-    summaryTbodyEl.innerHTML = '';
-
-    const statusOrder = ['won', 'lost', 'cancelled', 'TOTAL'];
-    
-    statusOrder.forEach(status => {
-      if (totals[status]) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>
-            <span class="status-badge status-${status}">${status}</span>
-          </td>
-          <td>${totals[status].count}</td>
-          <td>$${totals[status].betTotal.toFixed(2)}</td>
-          <td class="${getProfitClass(totals[status].profitTotal)}">
-            $${totals[status].profitTotal.toFixed(2)}
-          </td>
-        `;
-        summaryTbodyEl.appendChild(row);
-      }
-    });
-  };
-
-  // Render monthly breakdown
-  const renderMonthlyBreakdown = () => {
-    monthlyTbodyEl.innerHTML = '';
-
-    if (bettingData.length === 0) {
-      monthlyTbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666; padding: 20px;">No data available</td></tr>';
-      return;
-    }
-
-    const monthlyData = calculateMonthlyBreakdown();
-    
-    // Debug logging
-    console.log('Bet Calculator - Monthly data:', monthlyData);
-    console.log('Bet Calculator - Sample records:', bettingData.slice(0, 3).map(r => ({ 
-      created: r.created, 
-      recordedAt: r.recordedAt 
-    })));
-
-    if (monthlyData.length === 0) {
-      monthlyTbodyEl.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666; padding: 20px;">No monthly data available</td></tr>';
-      return;
-    }
-
-    monthlyData.forEach(month => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="month-name">${month.monthName}</td>
-        <td>${month.count}</td>
-        <td>$${month.betTotal.toFixed(2)}</td>
-        <td class="${getProfitClass(month.profitTotal)}">
-          $${month.profitTotal.toFixed(2)}
-        </td>
-        <td class="status-count">
-          ${month.won.count} ($${month.won.profitTotal.toFixed(2)})
-        </td>
-        <td class="status-count">
-          ${month.lost.count} ($${month.lost.profitTotal.toFixed(2)})
-        </td>
-        <td class="status-count">
-          ${month.cancelled.count} ($${month.cancelled.profitTotal.toFixed(2)})
-        </td>
-      `;
-      monthlyTbodyEl.appendChild(row);
-    });
-  };
 
   // Render recent bets
   const renderRecentBets = () => {
@@ -359,25 +279,22 @@
       return;
     }
 
-    // Sort by recorded date (most recent first) and take last 10
+    // Sort by recorded date (most recent first) and take last 5
     const recentBets = [...bettingData]
       .sort((a, b) => new Date(b.recordedAt) - new Date(a.recordedAt))
-      .slice(0, 10);
+      .slice(0, 5);
 
     recentBets.forEach(bet => {
       const betItem = document.createElement('div');
-      betItem.className = 'bet-item';
+      betItem.className = 'activity-item';
       betItem.innerHTML = `
-        <div class="bet-info">
-          <div class="bet-game">${bet.game}</div>
-          <div class="bet-slip">${bet.slipId}</div>
+        <div class="activity-info">
+          <div class="activity-game">${bet.game}</div>
+          <div class="activity-slip">${bet.slipId}</div>
         </div>
-        <div class="bet-amount">
-          <div class="bet-profit ${getProfitClass(bet.profit)}">
+        <div class="activity-amount">
+          <div class="activity-profit ${getProfitClass(bet.profit)}">
             $${bet.profit.toFixed(2)}
-          </div>
-          <div style="font-size: 11px; color: #999;">
-            Bet: $${bet.bet.toFixed(2)}
           </div>
         </div>
       `;
@@ -394,84 +311,13 @@
 
   // Setup event listeners
   const setupEventListeners = () => {
-    exportBtn.addEventListener('click', exportToCSV);
-    exportMonthlyBtn.addEventListener('click', exportMonthlyToCSV);
     refreshBtn.addEventListener('click', refreshData);
-    clearBtn.addEventListener('click', clearAllData);
     fullpageBtn.addEventListener('click', openFullPage);
     recordToggle.addEventListener('change', (e) => {
       saveToggleState(e.target.checked);
     });
   };
 
-  // Export data to CSV
-  const exportToCSV = () => {
-    if (bettingData.length === 0) {
-      alert('No data to export');
-      return;
-    }
-
-     const headers = ['Game', 'Slip ID', 'Bet Amount', 'Profit', 'Status', 'Created', 'Recorded At'];
-    const csvContent = [
-      headers.join(','),
-      ...bettingData.map(record => [
-        `"${record.game}"`,
-        `"${record.slipId}"`,
-        record.bet,
-        record.profit,
-        record.status,
-        `"${record.created}"`,
-        `"${record.recordedAt}"`
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `betting-data-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  // Export monthly data to CSV
-  const exportMonthlyToCSV = () => {
-    const monthlyData = calculateMonthlyBreakdown();
-    
-    if (monthlyData.length === 0) {
-      alert('No monthly data to export');
-      return;
-    }
-
-    const headers = ['Month', 'Total Bets', 'Bet Total', 'Profit/Loss', 'Won Count', 'Won Profit', 'Lost Count', 'Lost Profit', 'Cancelled Count', 'Cancelled Profit'];
-    const csvContent = [
-      headers.join(','),
-      ...monthlyData.map(month => [
-        `"${month.monthName}"`,
-        month.count,
-        month.betTotal,
-        month.profitTotal,
-        month.won.count,
-        month.won.profitTotal,
-        month.lost.count,
-        month.lost.profitTotal,
-        month.cancelled.count,
-        month.cancelled.profitTotal
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `monthly-betting-data-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   // Refresh data
   const refreshData = async () => {
@@ -488,15 +334,6 @@
     }
   };
 
-  // Clear all data
-  const clearAllData = () => {
-    if (confirm('Are you sure you want to clear all betting data? This action cannot be undone.')) {
-      chrome.storage.local.remove(['bettingData'], () => {
-        bettingData = [];
-        renderUI();
-      });
-    }
-  };
 
   // Open full page view
   const openFullPage = () => {
