@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bet Calculator Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        tr.bg-dark-3 {
+            background-color: #2d3748;
+            color: white;
+        }
+        tr.bg-dark-3:hover {
+            background-color: #4a5568;
+        }
+        .capitalize {
+            text-transform: capitalize;
+        }
+        .text-light-1 {
+            color: #e2e8f0;
+        }
+        .size-medium {
+            font-size: 14px;
+        }
+        .status-won { color: #4CAF50; }
+        .status-lost { color: #f44336; }
+        .status-cancelled { color: #ff9800; }
+        .status-open { color: #2196F3; }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bet Calculator Extension Test Page</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Install the Bet Calculator extension</li>
+                <li>Refresh this page</li>
+                <li>Look for the "Record Bets" button in the top-right corner</li>
+                <li>Click "Record Bets" to test the data parsing</li>
+                <li>Click the extension icon to view recorded data</li>
+            </ol>
+        </div>
+
+        <h2>Sample Betting Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Game</th>
+                    <th>Slip ID</th>
+                    <th>Bet Amount</th>
+                    <th>Profit</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="bg-dark-3">
+                    <td>
+                        <h4 class="text-light-1">Manchester United vs Liverpool</h4>
+                    </td>
+                    <td>
+                        <p class="size-medium">SLP-001</p>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$50.00</span>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$75.00</span>
+                    </td>
+                    <td>
+                        <h4 class="capitalize status-won">won</h4>
+                    </td>
+                    <td>
+                        <p>2024-01-15 14:30</p>
+                    </td>
+                </tr>
+                <tr class="bg-dark-3">
+                    <td>
+                        <h4 class="text-light-1">Barcelona vs Real Madrid</h4>
+                    </td>
+                    <td>
+                        <p class="size-medium">SLP-002</p>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$100.00</span>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">-$100.00</span>
+                    </td>
+                    <td>
+                        <h4 class="capitalize status-lost">lost</h4>
+                    </td>
+                    <td>
+                        <p>2024-01-16 16:45</p>
+                    </td>
+                </tr>
+                <tr class="bg-dark-3">
+                    <td>
+                        <h4 class="text-light-1">Chelsea vs Arsenal</h4>
+                    </td>
+                    <td>
+                        <p class="size-medium">SLP-003</p>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$25.00</span>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$0.00</span>
+                    </td>
+                    <td>
+                        <h4 class="capitalize status-cancelled">cancelled</h4>
+                    </td>
+                    <td>
+                        <p>2024-01-17 10:15</p>
+                    </td>
+                </tr>
+                <tr class="bg-dark-3">
+                    <td>
+                        <h4 class="text-light-1">Tottenham vs Newcastle</h4>
+                    </td>
+                    <td>
+                        <p class="size-medium">SLP-004</p>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$75.00</span>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$0.00</span>
+                    </td>
+                    <td>
+                        <h4 class="capitalize status-open">open</h4>
+                    </td>
+                    <td>
+                        <p>2024-01-18 12:00</p>
+                    </td>
+                </tr>
+                <tr class="bg-dark-3">
+                    <td>
+                        <h4 class="text-light-1">PSG vs Marseille</h4>
+                    </td>
+                    <td>
+                        <p class="size-medium">SLP-005</p>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$200.00</span>
+                    </td>
+                    <td>
+                        <span data-testid="currency-value">$300.00</span>
+                    </td>
+                    <td>
+                        <h4 class="capitalize status-won">won</h4>
+                    </td>
+                    <td>
+                        <p>2024-01-19 20:30</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 30px; padding: 15px; background: #f0f0f0; border-radius: 6px;">
+            <h3>Expected Results:</h3>
+            <ul>
+                <li><strong>4 records</strong> should be recorded (open bets are ignored)</li>
+                <li><strong>2 won bets:</strong> $50 + $200 = $250 total bet, $75 + $300 = $375 profit</li>
+                <li><strong>1 lost bet:</strong> $100 bet, -$100 profit</li>
+                <li><strong>1 cancelled bet:</strong> $25 bet, $0 profit</li>
+                <li><strong>Total:</strong> $375 bet, $275 profit, 4 bets</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Bet Calculator Extension",
+  "version": "1.0",
+  "description": "Record and aggregate betting data across multiple pages",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://csgoempire.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Bet Calculator"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
