@@ -49,7 +49,6 @@ A Chrome/Edge browser extension specifically designed for CSGOEmpire that helps 
 - It automatically detects CSGOEmpire's HTML elements and parses bet information
 - Supports CSGOEmpire's date format parsing (e.g., "Sat 06 Sep 21:03")
 - Works with CSGOEmpire's slip ID system for deduplication
-- **No floating buttons** - all recording is done through the extension popup
 
 ### Viewing Analytics
 
