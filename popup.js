@@ -243,18 +243,36 @@
       return;
     }
 
-    // Sort by recorded date (most recent first) and take last 5
+    // Sort by bet date (most recent first) and take last 5
     const recentBets = [...bettingData]
-      .sort((a, b) => new Date(b.recordedAt) - new Date(a.recordedAt))
+      .sort((a, b) => {
+        // Use created date if available, fallback to recordedAt
+        const dateA = a.created && a.created.trim() !== '' ? parseDate(a.created) : new Date(a.recordedAt);
+        const dateB = b.created && b.created.trim() !== '' ? parseDate(b.created) : new Date(b.recordedAt);
+        return dateB - dateA;
+      })
       .slice(0, 5);
 
     recentBets.forEach(bet => {
       const betItem = document.createElement('div');
       betItem.className = 'activity-item';
+      
+      // Get the display date (use created if available, fallback to recordedAt)
+      const displayDate = bet.created && bet.created.trim() !== '' ? parseDate(bet.created) : new Date(bet.recordedAt);
+      const formattedDate = displayDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
       betItem.innerHTML = `
         <div class="activity-info">
-          <div class="activity-game">${bet.game}</div>
-          <div class="activity-slip">${bet.slipId}</div>
+          <div class="activity-header">
+            <span class="activity-game">${bet.game}</span>
+            <span class="activity-slip">${bet.slipId}</span>
+          </div>
+          <div class="activity-timestamp">${formattedDate}</div>
         </div>
         <div class="activity-amount">
           <div class="activity-profit ${getProfitClass(bet.profit)}">
