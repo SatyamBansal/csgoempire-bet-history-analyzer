@@ -19,6 +19,20 @@
     return isCorrectUrl && hasTableRows;
   };
 
+  // Check if record button should be enabled
+  let recordButtonEnabled = true; // Default to enabled
+
+  const checkToggleState = async () => {
+    try {
+      const result = await chrome.storage.local.get(['recordButtonEnabled']);
+      recordButtonEnabled = result.recordButtonEnabled !== false; // Default to true
+      console.log('Bet Calculator - Record button enabled:', recordButtonEnabled);
+    } catch (error) {
+      console.error('Error checking toggle state:', error);
+      recordButtonEnabled = true; // Default to enabled on error
+    }
+  };
+
   // Create and inject the record button
   const createRecordButton = () => {
     // Remove existing button if any
@@ -259,8 +273,15 @@
   };
 
   // Initialize when page loads
-  const init = () => {
+  const init = async () => {
     console.log('Bet Calculator - Initializing...');
+    await checkToggleState();
+    
+    if (!recordButtonEnabled) {
+      console.log('Bet Calculator - Record button disabled by toggle');
+      return;
+    }
+    
     if (isBettingSite()) {
       console.log('Bet Calculator - Creating record button');
       createRecordButton();
@@ -290,11 +311,31 @@
     }
   }).observe(document, { subtree: true, childList: true });
 
+  // Listen for messages from popup
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'toggleRecordButton') {
+      recordButtonEnabled = request.enabled;
+      console.log('Bet Calculator - Toggle state changed:', recordButtonEnabled);
+      
+      if (recordButtonEnabled) {
+        // Re-initialize if enabled
+        init();
+      } else {
+        // Remove button if disabled
+        const existingBtn = document.getElementById('bet-calculator-btn');
+        if (existingBtn) {
+          existingBtn.remove();
+        }
+      }
+    }
+  });
+
   // Make functions available globally for debugging
   window.betCalculator = {
     init: init,
     createRecordButton: createRecordButton,
-    recordCurrentPageData: recordCurrentPageData
+    recordCurrentPageData: recordCurrentPageData,
+    checkToggleState: checkToggleState
   };
 
   console.log('Bet Calculator Extension loaded. Use window.betCalculator.init() to manually initialize.');

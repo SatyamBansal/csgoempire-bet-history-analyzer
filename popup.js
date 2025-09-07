@@ -14,11 +14,13 @@
   const exportBtn = document.getElementById('export-btn');
   const refreshBtn = document.getElementById('refresh-btn');
   const clearBtn = document.getElementById('clear-btn');
+  const recordToggle = document.getElementById('record-toggle');
 
   // Initialize popup
   const init = async () => {
     try {
       await loadData();
+      await loadToggleState();
       renderUI();
       setupEventListeners();
     } catch (error) {
@@ -35,6 +37,36 @@
     } catch (error) {
       console.error('Error loading data:', error);
       bettingData = [];
+    }
+  };
+
+  // Load toggle state from storage
+  const loadToggleState = async () => {
+    try {
+      const result = await chrome.storage.local.get(['recordButtonEnabled']);
+      const isEnabled = result.recordButtonEnabled !== false; // Default to true
+      recordToggle.checked = isEnabled;
+    } catch (error) {
+      console.error('Error loading toggle state:', error);
+      recordToggle.checked = true; // Default to enabled
+    }
+  };
+
+  // Save toggle state to storage
+  const saveToggleState = async (isEnabled) => {
+    try {
+      await chrome.storage.local.set({ recordButtonEnabled: isEnabled });
+      // Notify content script about the change
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0] && tabs[0].url.includes('csgoempire.com')) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            action: 'toggleRecordButton',
+            enabled: isEnabled
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error saving toggle state:', error);
     }
   };
 
@@ -177,6 +209,9 @@
     exportBtn.addEventListener('click', exportToCSV);
     refreshBtn.addEventListener('click', refreshData);
     clearBtn.addEventListener('click', clearAllData);
+    recordToggle.addEventListener('change', (e) => {
+      saveToggleState(e.target.checked);
+    });
   };
 
   // Export data to CSV
@@ -186,7 +221,7 @@
       return;
     }
 
-    const headers = ['Game', 'Slip ID', 'Bet Amount', 'Profit', 'Status', 'Created', 'Recorded At'];
+     const headers = ['Game', 'Slip ID', 'Bet Amount', 'Profit', 'Status', 'Created', 'Recorded At'];
     const csvContent = [
       headers.join(','),
       ...bettingData.map(record => [
