@@ -321,19 +321,11 @@
 
   // Listen for messages from popup
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'toggleRecordButton') {
-      recordButtonEnabled = request.enabled;
-      console.log('Bet Calculator - Toggle state changed:', recordButtonEnabled);
-      
-      if (recordButtonEnabled) {
-        // Re-initialize if enabled
-        init();
+    if (request.action === 'recordNow') {
+      if (isBettingSite()) {
+        recordCurrentPageData();
       } else {
-        // Remove button if disabled
-        const existingBtn = document.getElementById('bet-calculator-btn');
-        if (existingBtn) {
-          existingBtn.remove();
-        }
+        console.log('Bet Calculator - recordNow ignored: not on betting history page');
       }
     }
   });
@@ -341,11 +333,9 @@
   // Make functions available globally for debugging
   window.betCalculator = {
     init: init,
-    createRecordButton: createRecordButton,
-    recordCurrentPageData: recordCurrentPageData,
-    checkToggleState: checkToggleState
+    recordCurrentPageData: recordCurrentPageData
   };
 
-  console.log('Bet Calculator Extension loaded. Use window.betCalculator.init() to manually initialize.');
+  console.log('Bet Calculator Extension loaded.');
 
 })();

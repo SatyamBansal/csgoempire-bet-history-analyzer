@@ -12,13 +12,12 @@
   const recentBetsListEl = document.getElementById('recent-bets-list');
   const refreshBtn = document.getElementById('refresh-btn');
   const fullpageBtn = document.getElementById('fullpage-btn');
-  const recordToggle = document.getElementById('record-toggle');
+  const recordBtn = document.getElementById('record-btn');
 
   // Initialize popup
   const init = async () => {
     try {
       await loadData();
-      await loadToggleState();
       renderUI();
       setupEventListeners();
     } catch (error) {
@@ -35,36 +34,6 @@
     } catch (error) {
       console.error('Error loading data:', error);
       bettingData = [];
-    }
-  };
-
-  // Load toggle state from storage
-  const loadToggleState = async () => {
-    try {
-      const result = await chrome.storage.local.get(['recordButtonEnabled']);
-      const isEnabled = result.recordButtonEnabled !== false; // Default to true
-      recordToggle.checked = isEnabled;
-    } catch (error) {
-      console.error('Error loading toggle state:', error);
-      recordToggle.checked = true; // Default to enabled
-    }
-  };
-
-  // Save toggle state to storage
-  const saveToggleState = async (isEnabled) => {
-    try {
-      await chrome.storage.local.set({ recordButtonEnabled: isEnabled });
-      // Notify content script about the change
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0] && tabs[0].url.includes('csgoempire.com')) {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            action: 'toggleRecordButton',
-            enabled: isEnabled
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error saving toggle state:', error);
     }
   };
 
@@ -313,8 +282,15 @@
   const setupEventListeners = () => {
     refreshBtn.addEventListener('click', refreshData);
     fullpageBtn.addEventListener('click', openFullPage);
-    recordToggle.addEventListener('change', (e) => {
-      saveToggleState(e.target.checked);
+    recordBtn.addEventListener('click', recordNow);
+  };
+
+  // Trigger record on active tab
+  const recordNow = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tab = tabs && tabs[0];
+      if (!tab) return;
+      chrome.tabs.sendMessage(tab.id, { action: 'recordNow' });
     });
   };
 

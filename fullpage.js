@@ -19,14 +19,12 @@
   const refreshBtn = document.getElementById('refresh-btn');
   const clearBtn = document.getElementById('clear-btn');
   const openPopupBtn = document.getElementById('open-popup-btn');
-  const recordToggle = document.getElementById('record-toggle');
   const backBtn = document.getElementById('back-btn');
 
   // Initialize full page
   const init = async () => {
     try {
       await loadData();
-      await loadToggleState();
       renderUI();
       setupEventListeners();
     } catch (error) {
@@ -51,10 +49,10 @@
     try {
       const result = await chrome.storage.local.get(['recordButtonEnabled']);
       const isEnabled = result.recordButtonEnabled !== false; // Default to true
-      recordToggle.checked = isEnabled;
+      // recordToggle.checked = isEnabled; // This line is removed
     } catch (error) {
       console.error('Error loading toggle state:', error);
-      recordToggle.checked = true; // Default to enabled
+      // recordToggle.checked = true; // This line is removed
     }
   };
 
@@ -419,9 +417,6 @@
     refreshBtn.addEventListener('click', refreshData);
     clearBtn.addEventListener('click', clearAllData);
     openPopupBtn.addEventListener('click', openPopup);
-    recordToggle.addEventListener('change', (e) => {
-      saveToggleState(e.target.checked);
-    });
     backBtn.addEventListener('click', (e) => {
       e.preventDefault();
       window.close();
