@@ -207,11 +207,6 @@
 
   // Render the UI
   const renderUI = () => {
-    if (bettingData.length === 0) {
-      renderEmptyState();
-      return;
-    }
-
     const totals = calculateTotals();
     
     // Update main stats
